@@ -9,15 +9,14 @@ const App = () => {
   return (
     <div>
       <div>
-        <button onClick={() => setPage("authors")}>authors</button>
-        <button onClick={() => setPage("books")}>books</button>
-        <button onClick={() => setPage("add")}>add book</button>
+        <button onClick={() => setPage("authors")}>Authors</button>
+        <button onClick={() => setPage("books")}>Books</button>
+        <button onClick={() => setPage("add")}>Add Book</button>
+
       </div>
 
       <Authors show={page === "authors"} />
-
       <Books show={page === "books"} />
-
       <NewBook show={page === "add"} />
     </div>
   );
