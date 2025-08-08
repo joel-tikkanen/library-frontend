@@ -1,12 +1,11 @@
-import { useState } from "react";
-import { useQuery, useMutation } from "@apollo/client";
+import { useState, useEffect } from "react";
+import { useMutation } from "@apollo/client";
 import { ALL_AUTHORS, EDIT_AUTHOR } from "../queries";
 
-const SetBirthYear = () => {
+const SetBirthYear = ({ authors }) => {
   const [name, setName] = useState("");
   const [born, setBorn] = useState("");
 
-  const result = useQuery(ALL_AUTHORS);
   const [editAuthor] = useMutation(EDIT_AUTHOR, {
     refetchQueries: [{ query: ALL_AUTHORS }],
     onError: (error) => {
@@ -14,58 +13,40 @@ const SetBirthYear = () => {
     },
   });
 
-
-
-  if (result.loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (result.error) {
-    return <div>Error: {result.error.message}</div>;
-  }
-
-  const authors = result.data.allAuthors;
+  useEffect(() => {
+    if (authors.length > 0) {
+      setName(authors[0].name);
+    }
+  }, [authors]);
 
   const submit = (event) => {
     event.preventDefault();
-
-    if (name) {
-      editAuthor({
-        variables: {
-          name,
-          setBornTo: Number(born),
-        },
-      });
-
-      setName("");
-      setBorn("");
-    }
+    editAuthor({ variables: { name, setBornTo: parseInt(born) } });
+    setBorn("");
   };
 
   return (
     <div>
-      <h2>Set Birth Year</h2>
+      <h3>set birth year</h3>
       <form onSubmit={submit}>
         <div>
-          Author:
-          <select value={name} onChange={(e) => setName(e.target.value)}>
-            <option value="">Select an author</option>
-            {authors.map((author) => (
-              <option key={author.name} value={author.name}>
-                {author.name}
+          <select value={name} onChange={({ target }) => setName(target.value)}>
+            {authors.map((a) => (
+              <option key={a.name} value={a.name}>
+                {a.name}
               </option>
             ))}
           </select>
         </div>
         <div>
-          Born:
+          born
           <input
             type="number"
             value={born}
-            onChange={(e) => setBorn(e.target.value)}
+            onChange={({ target }) => setBorn(target.value)}
           />
         </div>
-        <button type="submit">Set Birth Year</button>
+        <button type="submit">update author</button>
       </form>
     </div>
   );
